@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WSB Heat Score · CSE 158 Project</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-alt: #070b1c;
+      --card-bg: #0b1020;
+      --accent: #00e887;            /* finance green */
+      --accent2: #ff7a45;           /* WSB / Reddit-ish orange */
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --shadow-soft: 0 16px 40px rgba(0,0,0,0.45);
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont,
+                   "SF Pro Text", "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-main);
+      background:
+        radial-gradient(circle at top, #111827 0, var(--bg) 40%),
+        radial-gradient(circle at bottom, #020617 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 20px 18px 60px;
+    }
+
+    /* Top nav */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      margin: -20px -18px 24px;
+      backdrop-filter: blur(16px);
+      background: linear-gradient(
+        to right,
+        rgba(5,8,22,0.96),
+        rgba(5,8,22,0.8)
+      );
+      border-bottom: 1px solid rgba(148,163,184,0.25);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .nav-pill {
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(0,232,135,0.5);
+      color: var(--accent);
+      font-size: 0.7rem;
+      background: rgba(0,0,0,0.45);
+    }
+
+    .nav-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .nav-right a {
+      padding: 6px 10px;
+      border-radius: var(--radius-pill);
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s;
+    }
+
+    .nav-right a:hover {
+      background: rgba(148,163,184,0.15);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    /* Hero */
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.3fr);
+      gap: 26px;
+      align-items: center;
+      margin-bottom: 34px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.1rem, 3vw, 2.6rem);
+      font-weight: 700;
+      margin: 0 0 10px;
+    }
+
+    .hero-title span {
+      color: var(--accent);
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 36rem;
+      margin-bottom: 16px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 6px 11px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148,163,184,0.35);
+      color: var(--text-muted);
+    }
+
+    .tag-strong {
+      border-color: rgba(0,232,135,0.7);
+      color: var(--accent);
+      background: rgba(0,232,135,0.08);
+    }
+
+    .tag-hot {
+      border-color: rgba(255,122,69,0.7);
+      color: var(--accent2);
+      background: rgba(255,122,69,0.08);
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: #020617;
+      box-shadow: 0 14px 30px rgba(0,232,135,0.22);
+      transition: transform 0.1s, box-shadow 0.1s, filter 0.15s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+      box-shadow: 0 18px 40px rgba(0,232,135,0.28);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border-color: rgba(148,163,184,0.6);
+      box-shadow: none;
+    }
+
+    .btn-ghost:hover {
+      color: var(--text-main);
+      background: rgba(148,163,184,0.1);
+    }
+
+    .hero-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Hero dashboard card */
+    .hero-card {
+      background: radial-gradient(circle at top left,
+                  rgba(0,232,135,0.22),
+                  #020617 58%);
+      border-radius: 22px;
+      border: 1px solid rgba(148,163,184,0.45);
+      padding: 16px 18px 15px;
+      box-shadow: var(--shadow-soft);
+      font-size: 0.82rem;
+    }
+
+    .hero-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .hero-card-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .hero-chip {
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .ticker-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .ticker-card {
+      background: rgba(15,23,42,0.94);
+      border-radius: 14px;
+      border: 1px solid rgba(15,118,110,0.7);
+      padding: 7px 8px;
+    }
+
+    .ticker-symbol {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .ticker-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .ticker-score {
+      font-size: 0.86rem;
+      margin-top: 2px;
+      color: var(--accent);
+    }
+
+    .sparkline {
+      border-radius: 14px;
+      border: 1px dashed rgba(148,163,184,0.7);
+      padding: 8px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Sections */
+    section {
+      margin-top: 28px;
+    }
+
+    .section-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      padding: 18px 18px 14px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+
+    .section-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 2fr);
+      gap: 14px;
+    }
+
+    h3 {
+      font-size: 0.95rem;
+      margin: 8px 0 4px;
+    }
+
+    p {
+      margin: 3px 0 6px;
+      font-size: 0.86rem;
+    }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+      font-size: 0.86rem;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.8rem;
+      background: rgba(15,23,42,0.96);
+      padding: 2px 5px;
+      border-radius: 6px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .pill {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      background: rgba(15,23,42,0.96);
+      border: 1px solid rgba(55,65,81,0.9);
+      color: var(--text-muted);
+    }
+
+    .pill-good {
+      border-color: rgba(0,232,135,0.8);
+      background: rgba(0,232,135,0.16);
+      color: var(--accent);
+    }
+
+    .pill-warn {
+      border-color: rgba(255,122,69,0.85);
+      background: rgba(255,122,69,0.14);
+      color: var(--accent2);
+    }
+
+    .footer {
+      margin-top: 32px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .nav-right {
+        flex-wrap: wrap;
+      }
+
+      .section-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- NAVBAR -->
+    <header class="nav">
+      <div class="nav-left">
+        WSB Heat Score
+        <span class="nav-pill">CSE 158 / 258 · UCSD</span>
+      </div>
+      <nav class="nav-right">
+        <a href="#overview">Overview</a>
+        <a href="#data">Data</a>
+        <a href="#models">Models</a>
+        <a href="#evaluation">Results</a>
+        <a href="#related">Related Work</a>
+        <a href="#links">Code</a>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <main>
+      <section class="hero" id="overview">
+        <div>
+          <h1 class="hero-title">
+            Predicting next-day <span>“heat”</span> for stocks from r/WallStreetBets
+          </h1>
+          <p class="hero-subtitle">
+            This CSE 158 project combines Reddit’s <code>r/WallStreetBets</code> discussion data
+            with historical US stock prices to predict which tickers are most likely to
+            experience large next-day moves, and ranks them with a learned
+            <strong>heat score</strong>.
+          </p>
+          <div class="hero-tags">
+            <span class="tag tag-strong">Machine Learning · Python</span>
+            <span class="tag">Reddit + Market Data</span>
+            <span class="tag tag-hot">Meme stocks &amp; volatility 🚀</span>
+          </div>
+          <div class="hero-buttons">
+            <!-- TODO: replace "#" with real links later -->
+            <a class="btn" href="#evaluation">See key results →</a>
+            <a class="btn btn-ghost" href="#links">View notebook &amp; repo</a>
+          </div>
+          <div class="hero-note">
+            Designed for peer grading: each section below matches the Assignment 2 rubric
+            (task, data, modeling, evaluation, related work).
+          </div>
+        </div>
+
+        <!-- Right: WSB-style mini dashboard -->
+        <aside class="hero-card">
+          <div class="hero-card-header">
+            <div>
+              <div class="hero-card-title">Top 3 tickers by heat score</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);">
+                Demo snapshot – probabilities of &gt; 5% next-day move
+              </div>
+            </div>
+            <span class="hero-chip">Model: boosted trees</span>
+          </div>
+
+          <div class="ticker-grid">
+            <div class="ticker-card">
+              <div class="ticker-symbol">$GME</div>
+              <div class="ticker-meta">Meme · High WSB volume</div>
+              <div class="ticker-score">heat = 0.81</div>
+            </div>
+            <div class="ticker-card">
+              <div class="ticker-symbol">$TSLA</div>
+              <div class="ticker-meta">Auto · Bullish sentiment</div>
+              <div class="ticker-score">heat = 0.65</div>
+            </div>
+            <div class="ticker-card">
+              <div class="ticker-symbol">$PLTR</div>
+              <div class="ticker-meta">Tech · Abnormal volume</div>
+              <div class="ticker-score">heat = 0.58</div>
+            </div>
+          </div>
+
+          <div class="sparkline">
+            The final model combines: WSB mention volume, sentiment scores, engagement
+            (upvotes / emojis), and lagged price &amp; volatility features. Baselines include
+            popularity-only rankings and logistic regression on simple tabular features.
+          </div>
+        </aside>
+      </section>
+
+      <!-- DATA SECTION -->
+      <section id="data">
+        <div class="section-card">
+          <h2 class="section-title">1. Dataset &amp; Feature Engineering</h2>
+          <p class="section-sub">
+            Reddit discussion features from <code>r/WallStreetBets</code> are merged with
+            daily OHLCV stock data to create (ticker, day) examples. This section matches
+            the “data collection &amp; preprocessing” part of the assignment.
+          </p>
+
+          <div class="section-grid">
+            <div>
+              <h3>WallStreetBets data</h3>
+              <p>
+                I start from a historical dump of WSB posts/comments and extract
+                cashtags (e.g. <code>$GME</code>, <code>$AAPL</code>) that correspond to valid
+                US tickers. For each (ticker, day), I aggregate:
+              </p>
+              <ul>
+                <li>Number of mentions &amp; day-over-day change</li>
+                <li>Average sentiment score across comments</li>
+                <li>Share of bullish vs. bearish comments</li>
+                <li>Engagement: average upvotes, rocket / diamond emojis, etc.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Market data</h3>
+              <p>
+                For the same tickers and dates, I use daily price &amp; volume data to derive:
+              </p>
+              <ul>
+                <li>Previous-day return &amp; rolling volatility</li>
+                <li>Volume relative to a 30-day moving average</li>
+                <li>Simple technical indicators (e.g. short/long MAs)</li>
+              </ul>
+              <p>
+                Labels are defined on day <code>t+1</code>, e.g. whether the absolute return
+                exceeds a 5% threshold (classification) or the actual return (regression).
+              </p>
+            </div>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill">Text cleaning &amp; tokenization</span>
+            <span class="pill">Ticker extraction &amp; mapping</span>
+            <span class="pill">Time-based train / val / test splits</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODELS SECTION -->
+      <section id="models">
+        <div class="section-card">
+          <h2 class="section-title">2. Modeling (Baselines &amp; CSE-Flavored Methods)</h2>
+          <p class="section-sub">
+            Here I formulate the ML tasks, motivate the choice of models, and compare
+            simple course-related baselines with more expressive models.
+          </p>
+
+          <div class="section-grid">
+            <div>
+              <h3>Task formulation</h3>
+              <ul>
+                <li>
+                  <strong>Classification:</strong> predict if a ticker will have a “large move”
+                  (&gt; 5% absolute return) on day <code>t+1</code>.
+                </li>
+                <li>
+                  <strong>Regression:</strong> predict the actual next-day return as a continuous
+                  value.
+                </li>
+                <li>
+                  In both cases, the model output is turned into a
+                  <strong>heat score</strong> that ranks tickers for a given day.
+                </li>
+              </ul>
+              <h3>CSE-style baselines</h3>
+              <ul>
+                <li>
+                  Popularity-only ranking: rank by WSB mention count (no prices).
+                </li>
+                <li>
+                  Logistic regression with Reddit features + lagged returns.
+                </li>
+                <li>
+                  Linear regression on the same feature set for return prediction.
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3>Stronger models</h3>
+              <ul>
+                <li>
+                  Gradient-boosted trees on combined Reddit + market features
+                  (captures non-linear interactions).
+                </li>
+                <li>
+                  Optional: transformer-based sentiment model to handle WSB slang,
+                  with scores fed into the tree model.
+                </li>
+                <li>
+                  Feature importance analysis to see whether volume, sentiment, or
+                  price history matters more.
+                </li>
+              </ul>
+              <p>
+                The focus is on methods that are feasible for Assignment 2 but
+                still demonstrate a clear improvement over simple baselines.
+              </p>
+            </div>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill pill-good">Scikit-learn (logistic / linear)</span>
+            <span class="pill pill-good">Gradient boosting</span>
+            <span class="pill">NLP features from WSB text</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- EVALUATION SECTION -->
+      <section id="evaluation">
+        <div class="section-card">
+          <h2 class="section-title">3. Evaluation &amp; Results</h2>
+          <p class="section-sub">
+            This section covers metrics, validation strategy, and how the final model
+            compares to baselines on both prediction and ranking quality.
+          </p>
+
+          <div class="section-grid">
+            <div>
+              <h3>Evaluation protocol</h3>
+              <ul>
+                <li>
+                  Time-based split into train → validation → test to avoid leakage
+                  from the future.
+                </li>
+                <li>
+                  <strong>Classification metrics:</strong> accuracy, precision/recall, ROC–AUC.
+                </li>
+                <li>
+                  <strong>Regression metrics:</strong> RMSE / MAE on next-day returns.
+                </li>
+                <li>
+                  <strong>Ranking metrics:</strong> hit-rate / recall@K for capturing the
+                  true top movers in the top-K of the heat ranking.
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3>Key findings (to fill with your actual numbers)</h3>
+              <ul>
+                <li>
+                  Popularity-only ranking is a surprisingly strong baseline for
+                  volume and volatility spikes.
+                </li>
+                <li>
+                  Adding sentiment and price history improves classification AUC
+                  and recall@K for large-move events.
+                </li>
+                <li>
+                  Exact return prediction is noisy; focusing on “large move vs no move”
+                  is more stable for ranking.
+                </li>
+              </ul>
+              <p style="font-size:0.78rem;color:var(--text-muted);">
+                In the final version, plots and tables from the notebook should be saved
+                as PNGs and embedded here (e.g., ROC curves, bar charts of metrics).
+              </p>
+            </div>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill pill-good">Time-aware splits</span>
+            <span class="pill">Baseline vs advanced comparison</span>
+            <span class="pill pill-warn">Class imbalance (few big moves)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RELATED WORK -->
+      <section id="related">
+        <div class="section-card">
+          <h2 class="section-title">4. Related Work &amp; Discussion</h2>
+          <p class="section-sub">
+            Prior research has used WSB data and other social media signals to study
+            stock returns, volatility, and retail investor behavior. My project draws on and
+            extends these ideas.
+          </p>
+          <p>
+            In the writeup and slides, I compare my results to:
+          </p>
+          <ul>
+            <li>
+              Studies showing that WSB attention can predict volatility or abnormal
+              volume for certain meme stocks.
+            </li>
+            <li>
+              Papers that use sentiment analysis (lexicon-based or transformer-based)
+              on finance-related social media.
+            </li>
+            <li>
+              Work arguing that comment <em>volume</em> is often a stronger signal than
+              sentiment polarity alone.
+            </li>
+          </ul>
+          <p>
+            Overall, my findings suggest that WSB-derived features are most useful
+            for ranking potential “lottery” stocks rather than for precise price prediction.
+          </p>
+        </div>
+      </section>
+
+      <!-- LINKS / CSE PROJECT INFO -->
+      <section id="links">
+        <div class="section-card">
+          <h2 class="section-title">5. Code, Notebook &amp; CSE Context</h2>
+          <p class="section-sub">
+            This section links the GitHub repos, notebook HTML, and presentation video
+            required for Assignment 2, and makes it obvious for peer graders where to click.
+          </p>
+          <ul>
+            <li>
+              <strong>Notebook (HTML):</strong>
+              <!-- Replace with actual link to workbook.html -->
+              <a href="#">link to <code>workbook.html</code></a>
+            </li>
+            <li>
+              <strong>Source code repo:</strong>
+              <!-- Replace with your GitHub repo link -->
+              <a href="#">GitHub · project code</a>
+            </li>
+            <li>
+              <strong>Presentation video:</strong>
+              <!-- Replace with your YouTube / Drive link -->
+              <a href="#">20-minute project talk</a>
+            </li>
+            <li>
+              <strong>Course:</strong> CSE 158 / 258: Recommender Systems &amp; Web Mining
+              – Assignment 2 (open-ended predictive modeling project).
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Built for CSE 158 / 258 Assignment 2 · Hosted on GitHub Pages · Inspired by r/WallStreetBets &amp; meme stock chaos 🚀
+    </footer>
+  </div>
+</body>
+</html>
