@@ -14,7 +14,7 @@
       --text-main: #f9fafb;
       --text-muted: #9ca3af;
       --border-subtle: #1f2937;
-      --radius-lg: 18px;
+      --radius-lg: 18px; 
       --radius-pill: 999px;
       --shadow-soft: 0 16px 40px rgba(0,0,0,0.45);
       --font-main: system-ui, -apple-system, BlinkMacSystemFont,
@@ -401,7 +401,7 @@
       </div>
       <nav class="nav-right">
         <a href="#overview">Overview</a>
-        <a href="#data">Data</a>
+        <a href="#data">Task</a>
         <a href="#models">Models</a>
         <a href="#evaluation">Results</a>
         <a href="#related">Related Work</a>
@@ -428,7 +428,6 @@
             <span class="tag tag-hot">Meme stocks &amp; volatility 🚀</span>
           </div>
           <div class="hero-buttons">
-            <!-- TODO: replace "#" with real links later -->
             <a class="btn" href="#evaluation">See key results →</a>
             <a class="btn btn-ghost" href="#links">View notebook &amp; repo</a>
           </div>
@@ -476,14 +475,108 @@
         </aside>
       </section>
 
-      <!-- DATA SECTION -->
+      <!-- SECTION 1: PREDICTIVE TASK -->
       <section id="data">
         <div class="section-card">
-          <h2 class="section-title">1. Dataset &amp; Feature Engineering</h2>
+          <h2 class="section-title">1. Predictive Task &amp; Evaluation Setup</h2>
+          <p class="section-sub">
+            This section defines the prediction problem, how I evaluate models, which
+            baselines I compare against, and how I check that the predictions are valid.
+          </p>
+
+          <div class="section-grid">
+            <div>
+              <h3>Predictive task</h3>
+              <p>
+                The goal is to predict whether a stock will experience a
+                <strong>large next-day price move</strong>. For each (ticker, day) example:
+              </p>
+              <ul>
+                <li>
+                  Define the label <code>big_move = 1</code> if the absolute next-day return
+                  <code>|next_return| ≥ 5%</code>, otherwise <code>0</code>.
+                </li>
+                <li>
+                  Use features from three sources:
+                  recent price &amp; volume, WSB activity (mentions, upvotes, authors),
+                  and text-based features from WSB discussions.
+                </li>
+                <li>
+                  The predicted probability of a big move serves as a
+                  <strong>heat score</strong> to rank tickers for that day.
+                </li>
+              </ul>
+
+              <h3>Evaluation metrics &amp; time split</h3>
+              <p>
+                Because big moves are relatively rare, I focus on
+                <strong>classification quality</strong> rather than just accuracy:
+              </p>
+              <ul>
+                <li><strong>F1-score</strong> (primary metric for model selection).</li>
+                <li><strong>Precision &amp; Recall</strong> to understand trade-offs.</li>
+                <li><strong>ROC-AUC</strong> for overall ranking quality.</li>
+                <li><strong>Accuracy</strong> reported for reference only.</li>
+              </ul>
+              <p>
+                To avoid look-ahead bias, I use a <strong>time-based split</strong>:
+                about 70% of the oldest dates for training, 15% for validation,
+                and the most recent 15% as a held-out test set.
+              </p>
+            </div>
+
+            <div>
+              <h3>Baselines for comparison</h3>
+              <p>
+                I compare all models against several simple but meaningful baselines:
+              </p>
+              <ul>
+                <li>Baseline 0: Majority classifier (always predict no big move).</li>
+                <li>Baseline 1: Price-only logistic regression.</li>
+                <li>Baseline 2: WSB numeric-only logistic regression.</li>
+                <li>Baseline 3: Price + WSB numeric logistic regression.</li>
+                <li>Baseline 4: Text-only TF-IDF logistic regression.</li>
+                <li>Baseline 5: Text + numeric logistic regression.</li>
+                <li>Baseline 6–9: Tuned TF-IDF models with sentiment, price-history, and temporal Reddit features.</li>
+              </ul>
+
+              <h3>Checking model validity</h3>
+              <p>
+                To make sure the final model’s predictions are trustworthy:
+              </p>
+              <ul>
+                <li>
+                  All tuning (hyperparameters and classification threshold) is done
+                  on the validation set only; the test set is used once at the end.
+                </li>
+                <li>
+                  I examine performance separately on different time periods and tickers
+                  to make sure results are not driven by a single meme-stock episode.
+                </li>
+                <li>
+                  Error analysis on false positives/negatives checks whether predictions
+                  line up with reasonable market behavior and WSB activity spikes.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill pill-good">Binary classification (big move vs. no move)</span>
+            <span class="pill">Time-based train / val / test split</span>
+            <span class="pill pill-warn">Imbalanced labels · F1 &amp; AUC focused</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- DATASET & FEATURE ENGINEERING (now effectively Section 2 of report, you can rename later if you want) -->
+      <section id="models">
+        <div class="section-card">
+          <h2 class="section-title">2. Dataset &amp; Feature Engineering</h2>
           <p class="section-sub">
             Reddit discussion features from <code>r/WallStreetBets</code> are merged with
-            daily OHLCV stock data to create (ticker, day) examples. This section matches
-            the “data collection &amp; preprocessing” part of the assignment.
+            daily OHLCV stock data to create (ticker, day) examples. This matches the
+            “data collection &amp; preprocessing” part of the assignment.
           </p>
 
           <div class="section-grid">
@@ -495,10 +588,10 @@
                 US tickers. For each (ticker, day), I aggregate:
               </p>
               <ul>
-                <li>Number of mentions &amp; day-over-day change</li>
-                <li>Average sentiment score across comments</li>
-                <li>Share of bullish vs. bearish comments</li>
-                <li>Engagement: average upvotes, rocket / diamond emojis, etc.</li>
+                <li>Number of mentions &amp; day-over-day change.</li>
+                <li>Average sentiment score across comments.</li>
+                <li>Share of bullish vs. bearish comments.</li>
+                <li>Engagement: upvotes, comment volume, emoji activity, etc.</li>
               </ul>
             </div>
             <div>
@@ -507,13 +600,13 @@
                 For the same tickers and dates, I use daily price &amp; volume data to derive:
               </p>
               <ul>
-                <li>Previous-day return &amp; rolling volatility</li>
-                <li>Volume relative to a 30-day moving average</li>
-                <li>Simple technical indicators (e.g. short/long MAs)</li>
+                <li>Previous-day return and simple rolling volatility.</li>
+                <li>Volume relative to recent averages (e.g., 5–10 day windows).</li>
+                <li>Additional lagged returns and volume trends for context.</li>
               </ul>
               <p>
-                Labels are defined on day <code>t+1</code>, e.g. whether the absolute return
-                exceeds a 5% threshold (classification) or the actual return (regression).
+                Labels are always defined on day <code>t+1</code>, using the absolute
+                next-day return to decide whether a “big move” occurred.
               </p>
             </div>
           </div>
@@ -521,137 +614,58 @@
           <div class="pill-row">
             <span class="pill">Text cleaning &amp; tokenization</span>
             <span class="pill">Ticker extraction &amp; mapping</span>
-            <span class="pill">Time-based train / val / test splits</span>
+            <span class="pill">Merging Reddit + price by (ticker, day)</span>
           </div>
         </div>
       </section>
 
-      <!-- MODELS SECTION -->
-      <section id="models">
-        <div class="section-card">
-          <h2 class="section-title">2. Modeling (Baselines &amp; CSE-Flavored Methods)</h2>
-          <p class="section-sub">
-            Here I formulate the ML tasks, motivate the choice of models, and compare
-            simple course-related baselines with more expressive models.
-          </p>
+      <!-- (Rest of sections unchanged, just renumber in the titles if you want) -->
 
-          <div class="section-grid">
-            <div>
-              <h3>Task formulation</h3>
-              <ul>
-                <li>
-                  <strong>Classification:</strong> predict if a ticker will have a “large move”
-                  (&gt; 5% absolute return) on day <code>t+1</code>.
-                </li>
-                <li>
-                  <strong>Regression:</strong> predict the actual next-day return as a continuous
-                  value.
-                </li>
-                <li>
-                  In both cases, the model output is turned into a
-                  <strong>heat score</strong> that ranks tickers for a given day.
-                </li>
-              </ul>
-              <h3>CSE-style baselines</h3>
-              <ul>
-                <li>
-                  Popularity-only ranking: rank by WSB mention count (no prices).
-                </li>
-                <li>
-                  Logistic regression with Reddit features + lagged returns.
-                </li>
-                <li>
-                  Linear regression on the same feature set for return prediction.
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3>Stronger models</h3>
-              <ul>
-                <li>
-                  Gradient-boosted trees on combined Reddit + market features
-                  (captures non-linear interactions).
-                </li>
-                <li>
-                  Optional: transformer-based sentiment model to handle WSB slang,
-                  with scores fed into the tree model.
-                </li>
-                <li>
-                  Feature importance analysis to see whether volume, sentiment, or
-                  price history matters more.
-                </li>
-              </ul>
-              <p>
-                The focus is on methods that are feasible for Assignment 2 but
-                still demonstrate a clear improvement over simple baselines.
-              </p>
-            </div>
-          </div>
-
-          <div class="pill-row">
-            <span class="pill pill-good">Scikit-learn (logistic / linear)</span>
-            <span class="pill pill-good">Gradient boosting</span>
-            <span class="pill">NLP features from WSB text</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- EVALUATION SECTION -->
+      <!-- EVALUATION / MODELS SECTION (old "models" card) -->
       <section id="evaluation">
         <div class="section-card">
-          <h2 class="section-title">3. Evaluation &amp; Results</h2>
+          <h2 class="section-title">3. Modeling &amp; Results</h2>
           <p class="section-sub">
-            This section covers metrics, validation strategy, and how the final model
-            compares to baselines on both prediction and ranking quality.
+            This section covers the main modeling choices and how the final model
+            compares to the baselines in terms of classification quality.
           </p>
 
           <div class="section-grid">
             <div>
-              <h3>Evaluation protocol</h3>
+              <h3>Model family</h3>
               <ul>
                 <li>
-                  Time-based split into train → validation → test to avoid leakage
-                  from the future.
+                  Core model: logistic regression on a combined feature space
+                  of TF-IDF text features plus numeric Reddit and price features.
                 </li>
                 <li>
-                  <strong>Classification metrics:</strong> accuracy, precision/recall, ROC–AUC.
+                  Hyperparameters for TF-IDF (vocabulary size, n-grams) and
+                  regularization strength are tuned using validation F1.
                 </li>
                 <li>
-                  <strong>Regression metrics:</strong> RMSE / MAE on next-day returns.
-                </li>
-                <li>
-                  <strong>Ranking metrics:</strong> hit-rate / recall@K for capturing the
-                  true top movers in the top-K of the heat ranking.
+                  Additional variants add sentiment features and temporal Reddit
+                  features (lags, rolling averages, “buzz shock” ratios).
                 </li>
               </ul>
             </div>
             <div>
-              <h3>Key findings (to fill with your actual numbers)</h3>
-              <ul>
-                <li>
-                  Popularity-only ranking is a surprisingly strong baseline for
-                  volume and volatility spikes.
-                </li>
-                <li>
-                  Adding sentiment and price history improves classification AUC
-                  and recall@K for large-move events.
-                </li>
-                <li>
-                  Exact return prediction is noisy; focusing on “large move vs no move”
-                  is more stable for ranking.
-                </li>
-              </ul>
+              <h3>Key performance summary</h3>
+              <p>
+                The tuned text + numeric model substantially outperforms all simple
+                baselines on F1, precision, recall, and ROC-AUC on the held-out test set.
+              </p>
               <p style="font-size:0.78rem;color:var(--text-muted);">
-                In the final version, plots and tables from the notebook should be saved
-                as PNGs and embedded here (e.g., ROC curves, bar charts of metrics).
+                In the final writeup, this card will be backed by tables / plots from the
+                notebook (e.g., metric comparison chart, ROC curves, and ablation
+                results for different feature groups).
               </p>
             </div>
           </div>
 
           <div class="pill-row">
-            <span class="pill pill-good">Time-aware splits</span>
-            <span class="pill">Baseline vs advanced comparison</span>
-            <span class="pill pill-warn">Class imbalance (few big moves)</span>
+            <span class="pill pill-good">TF-IDF + numeric logistic regression</span>
+            <span class="pill">Sentiment &amp; temporal Reddit features</span>
+            <span class="pill pill-warn">Few positive labels → threshold tuning</span>
           </div>
         </div>
       </section>
@@ -700,17 +714,14 @@
           <ul>
             <li>
               <strong>Notebook (HTML):</strong>
-              <!-- Replace with actual link to workbook.html -->
               <a href="#">link to <code>workbook.html</code></a>
             </li>
             <li>
               <strong>Source code repo:</strong>
-              <!-- Replace with your GitHub repo link -->
               <a href="#">GitHub · project code</a>
             </li>
             <li>
               <strong>Presentation video:</strong>
-              <!-- Replace with your YouTube / Drive link -->
               <a href="#">20-minute project talk</a>
             </li>
             <li>
