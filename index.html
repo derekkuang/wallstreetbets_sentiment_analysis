@@ -480,8 +480,8 @@
         <div class="section-card">
           <h2 class="section-title">1. Predictive Task &amp; Evaluation Setup</h2>
           <p class="section-sub">
-            This section defines the prediction problem, how I evaluate models, which
-            baselines I compare against, and how I check that the predictions are valid.
+            This section defines the prediction problem, how we evaluate models, which
+            baselines we compare against, and how we check that the predictions are valid.
           </p>
 
           <div class="section-grid">
@@ -509,7 +509,7 @@
 
               <h3>Evaluation metrics &amp; time split</h3>
               <p>
-                Because big moves are relatively rare, I focus on
+                Because big moves are relatively rare, we focus on
                 <strong>classification quality</strong> rather than just accuracy:
               </p>
               <ul>
@@ -519,7 +519,7 @@
                 <li><strong>Accuracy</strong> reported for reference only.</li>
               </ul>
               <p>
-                To avoid look-ahead bias, I use a <strong>time-based split</strong>:
+                To avoid look-ahead bias, we use a <strong>time-based split</strong>:
                 about 70% of the oldest dates for training, 15% for validation,
                 and the most recent 15% as a held-out test set.
               </p>
@@ -528,7 +528,7 @@
             <div>
               <h3>Baselines for comparison</h3>
               <p>
-                I compare all models against several simple but meaningful baselines:
+                We compare all models against several simple but meaningful baselines:
               </p>
               <ul>
                 <li>Baseline 0: Majority classifier (always predict no big move).</li>
@@ -550,7 +550,7 @@
                   on the validation set only; the test set is used once at the end.
                 </li>
                 <li>
-                  I examine performance separately on different time periods and tickers
+                  We examine performance separately on different time periods and tickers
                   to make sure results are not driven by a single meme-stock episode.
                 </li>
                 <li>
@@ -599,7 +599,7 @@
               <h3>Reddit processing</h3>
               <ul>
                 <li>Normalize timestamps to daily granularity.</li>
-                <li>Remove bot / moderator users and dropped deleted or empty content.</li>
+                <li>Remove bot / moderator users and drop deleted or empty content.</li>
                 <li>
                   Construct a canonical text field by merging post titles and bodies
                   (or comment text), removing URLs and line breaks, and lowercasing
@@ -711,38 +711,92 @@
         </div>
       </section>
 
-      <!-- RELATED WORK -->
-      <section id="related">
-        <div class="section-card">
-          <h2 class="section-title">4. Related Work &amp; Discussion</h2>
-          <p class="section-sub">
-            Prior research has used WSB data and other social media signals to study
-            stock returns, volatility, and retail investor behavior. My project draws on and
-            extends these ideas.
-          </p>
-          <p>
-            In the writeup and slides, I compare my results to:
-          </p>
-          <ul>
-            <li>
-              Studies showing that WSB attention can predict volatility or abnormal
-              volume for certain meme stocks.
-            </li>
-            <li>
-              Papers that use sentiment analysis (lexicon-based or transformer-based)
-              on finance-related social media.
-            </li>
-            <li>
-              Work arguing that comment <em>volume</em> is often a stronger signal than
-              sentiment polarity alone.
-            </li>
-          </ul>
-          <p>
-            Overall, my findings suggest that WSB-derived features are most useful
-            for ranking potential “lottery” stocks rather than for precise price prediction.
-          </p>
-        </div>
-      </section>
+            <!-- RELATED WORK -->
+            <section id="related">
+              <div class="section-card">
+                <h2 class="section-title">4. Related Work &amp; Discussion</h2>
+                <p class="section-sub">
+                  This section summarizes how similar WallStreetBets datasets have been used,
+                  how prior work approached related tasks, and how our results compare.
+                </p>
+      
+                <div class="section-grid">
+                  <!-- LEFT COLUMN -->
+                  <div>
+                    <h3>WSB sentiment &amp; market behavior</h3>
+                    <ul>
+                      <li>
+                        Uses WSB posts and comments to measure sentiment and attention,
+                        then studies how these signals relate to stock returns and retail trading.
+                      </li>
+                      <li>
+                        Shows that WSB activity contains <strong>predictive information</strong>,
+                        especially during high-attention periods.
+                      </li>
+                      <li>
+                        Our work is inspired by this but moves from correlation-style analysis
+                        to an explicit <strong>day-ahead prediction</strong> problem at the ticker level.
+                      </li>
+                    </ul>
+      
+                    <h3>Kaggle “r/WallStreetBets EDA &amp; Sentiment Analysis”</h3>
+                    <ul>
+                      <li>
+                        Performs exploratory analysis of WSB posts: mentions, tags,
+                        frequencies, and simple sentiment scores.
+                      </li>
+                      <li>
+                        Informed parts of our <strong>data cleaning</strong> and
+                        <strong>ticker-extraction</strong> pipeline.
+                      </li>
+                      <li>
+                        That work is descriptive; we extend it by turning Reddit + market
+                        data into a supervised dataset for prediction.
+                      </li>
+                    </ul>
+                  </div>
+      
+                  <!-- RIGHT COLUMN -->
+                  <div>
+                    <h3>Reddit–GameStop information transfer</h3>
+                    <ul>
+                      <li>
+                        Focuses on GameStop (GME) using wavelet coherence to see whether
+                        Reddit discussions lead or lag price movements.
+                      </li>
+                      <li>
+                        Finds that social-media attention can <strong>precede volatility</strong>,
+                        especially in extreme meme-stock episodes.
+                      </li>
+                      <li>
+                        We instead build a cross-sectional model across many tickers, but our
+                        finding that Reddit features help detect large moves is consistent with
+                        this single-stock evidence.
+                      </li>
+                    </ul>
+      
+                    <h3>Overall takeaway</h3>
+                    <ul>
+                      <li>
+                        Prior work consistently shows that WSB attention is linked to
+                        volatility and abnormal volume.
+                      </li>
+                      <li>
+                        Our contribution is a <strong>fully supervised, out-of-sample
+                        evaluation</strong> of a model that predicts large next-day moves,
+                        combining Reddit text, sentiment, and market features.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+      
+                <div class="pill-row">
+                  <span class="pill">WSB sentiment signals</span>
+                  <span class="pill">Meme-stock case studies</span>
+                  <span class="pill pill-good">From descriptive to predictive</span>
+                </div>
+              </div>
+            </section>      
 
       <!-- LINKS / CSE PROJECT INFO -->
       <section id="links">
