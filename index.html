@@ -278,6 +278,8 @@
     /* Sections */
     section {
       margin-top: 28px;
+      /* so anchor jumps leave room for sticky nav */
+      scroll-margin-top: 90px;
     }
 
     .section-card {
@@ -403,9 +405,10 @@
         <a href="#overview">Overview</a>
         <a href="#data">Task</a>
         <a href="#models">Data</a>
-        <a href="#evaluation">Results</a>
+        <a href="#evaluation">Models</a>
+        <a href="#eval-detail">Evaluation</a>
         <a href="#related">Related Work</a>
-        <a href="#links">Code</a>
+        <a href="#links">Links</a>
       </nav>
     </header>
 
@@ -711,97 +714,133 @@
         </div>
       </section>
 
-            <!-- RELATED WORK -->
-            <section id="related">
-              <div class="section-card">
-                <h2 class="section-title">4. Related Work &amp; Discussion</h2>
-                <p class="section-sub">
-                  This section summarizes how similar WallStreetBets datasets have been used,
-                  how prior work approached related tasks, and how our results compare.
-                </p>
-      
-                <div class="section-grid">
-                  <!-- LEFT COLUMN -->
-                  <div>
-                    <h3>WSB sentiment &amp; market behavior</h3>
-                    <ul>
-                      <li>
-                        Uses WSB posts and comments to measure sentiment and attention,
-                        then studies how these signals relate to stock returns and retail trading.
-                      </li>
-                      <li>
-                        Shows that WSB activity contains <strong>predictive information</strong>,
-                        especially during high-attention periods.
-                      </li>
-                      <li>
-                        Our work is inspired by this but moves from correlation-style analysis
-                        to an explicit <strong>day-ahead prediction</strong> problem at the ticker level.
-                      </li>
-                    </ul>
-      
-                    <h3>Kaggle “r/WallStreetBets EDA &amp; Sentiment Analysis”</h3>
-                    <ul>
-                      <li>
-                        Performs exploratory analysis of WSB posts: mentions, tags,
-                        frequencies, and simple sentiment scores.
-                      </li>
-                      <li>
-                        Informed parts of our <strong>data cleaning</strong> and
-                        <strong>ticker-extraction</strong> pipeline.
-                      </li>
-                      <li>
-                        That work is descriptive; we extend it by turning Reddit + market
-                        data into a supervised dataset for prediction.
-                      </li>
-                    </ul>
-                  </div>
-      
-                  <!-- RIGHT COLUMN -->
-                  <div>
-                    <h3>Reddit–GameStop information transfer</h3>
-                    <ul>
-                      <li>
-                        Focuses on GameStop (GME) using wavelet coherence to see whether
-                        Reddit discussions lead or lag price movements.
-                      </li>
-                      <li>
-                        Finds that social-media attention can <strong>precede volatility</strong>,
-                        especially in extreme meme-stock episodes.
-                      </li>
-                      <li>
-                        We instead build a cross-sectional model across many tickers, but our
-                        finding that Reddit features help detect large moves is consistent with
-                        this single-stock evidence.
-                      </li>
-                    </ul>
-      
-                    <h3>Overall takeaway</h3>
-                    <ul>
-                      <li>
-                        Prior work consistently shows that WSB attention is linked to
-                        volatility and abnormal volume.
-                      </li>
-                      <li>
-                        Our contribution is a <strong>fully supervised, out-of-sample
-                        evaluation</strong> of a model that predicts large next-day moves,
-                        combining Reddit text, sentiment, and market features.
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-      
-                <div class="pill-row">
-                  <span class="pill">WSB sentiment signals</span>
-                  <span class="pill">Meme-stock case studies</span>
-                  <span class="pill pill-good">From descriptive to predictive</span>
-                </div>
-              </div>
-            </section>      
+      <!-- SECTION 4: EVALUATION (PLACEHOLDER) -->
+      <section id="eval-detail">
+        <div class="section-card">
+          <h2 class="section-title">4. Evaluation</h2>
+          <p class="section-sub">
+            Placeholder section for a deeper discussion of evaluation:
+            why these metrics are appropriate, how we compare to baselines,
+            and which plots/tables support our conclusions.
+          </p>
 
-      <!-- LINKS / CSE PROJECT INFO -->
+          <div class="section-grid">
+            <div>
+              <h3>Context (to fill in)</h3>
+              <ul>
+                <li>Explain why F1 / precision / recall / ROC-AUC are appropriate.</li>
+                <li>Discuss class imbalance and why accuracy alone is misleading.</li>
+                <li>Describe how ranking quality is evaluated (e.g., recall@K).</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Protocol &amp; code (to fill in)</h3>
+              <ul>
+                <li>Outline the time-based split and threshold tuning process.</li>
+                <li>Reference the tables/plots you’ll embed (ROC, PR, metric bars).</li>
+                <li>Mention which sklearn functions you use for metrics.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill">Add metric tables here</span>
+            <span class="pill">Add ROC / PR plots here</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: RELATED WORK & DISCUSSION -->
+      <section id="related">
+        <div class="section-card">
+          <h2 class="section-title">5. Related Work &amp; Discussion</h2>
+          <p class="section-sub">
+            This section summarizes how similar WallStreetBets datasets have been used,
+            how prior work approached related tasks, and how our results compare.
+          </p>
+
+          <div class="section-grid">
+            <!-- LEFT COLUMN -->
+            <div>
+              <h3>WSB sentiment &amp; market behavior</h3>
+              <ul>
+                <li>
+                  Uses WSB posts and comments to measure sentiment and attention, then
+                  studies how these signals relate to stock returns and retail trading.
+                </li>
+                <li>
+                  Shows that WSB activity contains <strong>predictive information</strong>,
+                  especially during high-attention periods.
+                </li>
+                <li>
+                  Our work is inspired by this but moves from correlation-style analysis to
+                  an explicit <strong>day-ahead prediction</strong> problem at the ticker level.
+                </li>
+              </ul>
+
+              <h3>Kaggle “r/WallStreetBets EDA &amp; Sentiment Analysis”</h3>
+              <ul>
+                <li>
+                  Performs exploratory analysis of WSB posts: mentions, tags, frequencies,
+                  and simple sentiment scores.
+                </li>
+                <li>
+                  Informed parts of our <strong>data cleaning</strong> and
+                  <strong>ticker-extraction</strong> pipeline.
+                </li>
+                <li>
+                  That work is descriptive; we extend it by turning Reddit + market data
+                  into a supervised dataset for prediction.
+                </li>
+              </ul>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div>
+              <h3>Reddit–GameStop information transfer</h3>
+              <ul>
+                <li>
+                  Focuses on GameStop (GME) using wavelet coherence to see whether
+                  Reddit discussions lead or lag price movements.
+                </li>
+                <li>
+                  Finds that social-media attention can <strong>precede volatility</strong>,
+                  especially in extreme meme-stock episodes.
+                </li>
+                <li>
+                  We instead build a cross-sectional model across many tickers, but our
+                  finding that Reddit features help detect large moves is consistent with
+                  this single-stock evidence.
+                </li>
+              </ul>
+
+              <h3>Overall takeaway</h3>
+              <ul>
+                <li>
+                  Prior work consistently shows that WSB attention is linked to volatility
+                  and abnormal volume.
+                </li>
+                <li>
+                  Our contribution is a <strong>fully supervised, out-of-sample evaluation</strong>
+                  of a model that predicts large next-day moves, combining Reddit text,
+                  sentiment, and market features.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill">WSB sentiment signals</span>
+            <span class="pill">Meme-stock case studies</span>
+            <span class="pill pill-good">From descriptive to predictive</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: LINKS / CSE CONTEXT -->
       <section id="links">
         <div class="section-card">
-          <h2 class="section-title">5. Code, Notebook &amp; CSE Context</h2>
+          <h2 class="section-title">6. Code, Notebook &amp; CSE Context</h2>
           <p class="section-sub">
             This section links the GitHub repos, notebook HTML, and presentation video
             required for Assignment 2, and makes it obvious for peer graders where to click.
