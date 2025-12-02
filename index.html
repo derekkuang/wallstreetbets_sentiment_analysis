@@ -402,7 +402,7 @@
       <nav class="nav-right">
         <a href="#overview">Overview</a>
         <a href="#data">Task</a>
-        <a href="#models">Models</a>
+        <a href="#models">Data</a>
         <a href="#evaluation">Results</a>
         <a href="#related">Related Work</a>
         <a href="#links">Code</a>
@@ -569,59 +569,100 @@
         </div>
       </section>
 
-      <!-- DATASET & FEATURE ENGINEERING (now effectively Section 2 of report, you can rename later if you want) -->
+      <!-- SECTION 2: DATA COLLECTION & PRE-PROCESSING -->
       <section id="models">
         <div class="section-card">
-          <h2 class="section-title">2. Dataset &amp; Feature Engineering</h2>
+          <h2 class="section-title">2. Data Collection &amp; Pre-processing</h2>
           <p class="section-sub">
-            Reddit discussion features from <code>r/WallStreetBets</code> are merged with
-            daily OHLCV stock data to create (ticker, day) examples. This matches the
-            “data collection &amp; preprocessing” part of the assignment.
+            This section summarizes where the dataset comes from and how the raw Reddit
+            and market data were transformed into structured (ticker, day) examples.
           </p>
 
           <div class="section-grid">
             <div>
-              <h3>WallStreetBets data</h3>
-              <p>
-                I start from a historical dump of WSB posts/comments and extract
-                cashtags (e.g. <code>$GME</code>, <code>$AAPL</code>) that correspond to valid
-                US tickers. For each (ticker, day), I aggregate:
-              </p>
+              <h3>Context</h3>
               <ul>
-                <li>Number of mentions &amp; day-over-day change.</li>
-                <li>Average sentiment score across comments.</li>
-                <li>Share of bullish vs. bearish comments.</li>
-                <li>Engagement: upvotes, comment volume, emoji activity, etc.</li>
+                <li>
+                  Reddit data comes from a cleaned dump of posts and comments from
+                  <code>r/WallStreetBets</code> (titles, bodies, authors, timestamps, scores, tags).
+                </li>
+                <li>
+                  Market data comes from Yahoo Finance, providing daily OHLCV
+                  (open, high, low, close, volume) for actively traded US tickers.
+                </li>
+                <li>
+                  The goal is to connect Reddit discussions with real market behavior
+                  by forming structured <strong>(ticker, day)</strong> examples.
+                </li>
+              </ul>
+
+              <h3>Reddit processing</h3>
+              <ul>
+                <li>Normalize timestamps to daily granularity.</li>
+                <li>Remove bot / moderator users and dropped deleted or empty content.</li>
+                <li>
+                  Construct a canonical text field by merging post titles and bodies
+                  (or comment text), removing URLs and line breaks, and lowercasing
+                  into a single <code>clean_text</code> column.
+                </li>
+                <li>
+                  This clean text is used later for tokenization, sentiment scoring,
+                  and TF-IDF features.
+                </li>
               </ul>
             </div>
+
             <div>
-              <h3>Market data</h3>
-              <p>
-                For the same tickers and dates, I use daily price &amp; volume data to derive:
-              </p>
+              <h3>Ticker mapping &amp; price data</h3>
               <ul>
-                <li>Previous-day return and simple rolling volatility.</li>
-                <li>Volume relative to recent averages (e.g., 5–10 day windows).</li>
-                <li>Additional lagged returns and volume trends for context.</li>
+                <li>
+                  Extract candidate tickers using cashtags (e.g., <code>$GME</code>) and
+                  bare uppercase tokens (e.g., <code>NVDA</code>, <code>SPY</code>).
+                </li>
+                <li>
+                  Filter candidates by minimum frequency and manually drop ambiguous
+                  English words and generic finance terms.
+                </li>
+                <li>
+                  Validate the remaining symbols with Yahoo Finance to ensure they
+                  correspond to real, actively traded stocks.
+                </li>
+                <li>
+                  Explode Reddit rows so each (post/comment) × (ticker) becomes its
+                  own row, then download daily OHLCV prices for that curated
+                  ticker universe and reshape to long format aligned on
+                  <code>(ticker, datetime)</code>.
+                </li>
               </ul>
-              <p>
-                Labels are always defined on day <code>t+1</code>, using the absolute
-                next-day return to decide whether a “big move” occurred.
-              </p>
+
+              <h3>Merged modeling table</h3>
+              <ul>
+                <li>
+                  Join Reddit activity, sentiment, text, and price data into one
+                  modeling table indexed by <strong>(ticker, day)</strong>.
+                </li>
+                <li>
+                  Include mention counts, upvotes, comment volume, sentiment scores,
+                  cleaned text, daily returns, and basic rolling / lagged price features.
+                </li>
+                <li>
+                  This merged table is the starting point for exploratory plots,
+                  summary statistics, and all predictive models in later sections.
+                </li>
+              </ul>
             </div>
           </div>
 
           <div class="pill-row">
-            <span class="pill">Text cleaning &amp; tokenization</span>
-            <span class="pill">Ticker extraction &amp; mapping</span>
-            <span class="pill">Merging Reddit + price by (ticker, day)</span>
+            <span class="pill">Reddit text cleaning</span>
+            <span class="pill">Ticker extraction</span>
+            <span class="pill">YFinance validation</span>
+            <span class="pill">Reddit–market merge</span>
           </div>
         </div>
       </section>
 
-      <!-- (Rest of sections unchanged, just renumber in the titles if you want) -->
-
-      <!-- EVALUATION / MODELS SECTION (old "models" card) -->
+      <!-- SECTION 3: MODELING & RESULTS -->
       <section id="evaluation">
         <div class="section-card">
           <h2 class="section-title">3. Modeling &amp; Results</h2>
