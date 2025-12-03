@@ -1069,17 +1069,17 @@ pipe.fit(X_train, y_train)
       <section id="related">
         <div class="section-card">
           <h2 class="section-title">5. Related Work &amp; Discussion</h2>
-          <h3>WallStreetBets sentiment and markets</h3>
+          <h3><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4384743" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">WallStreetBets sentiment and markets</a></h3>
           <p>
             Huang &amp; Shum Nolan (2024) build daily stock- and forum-level sentiment indices from 2.2M WSB posts using a BERT classifier, then link “attention herding” portfolios to abnormal returns and Robinhood flows. They find that positive WSB sentiment and concentrated attention predict strong abnormal returns without short-term reversal, and that influencers amplify these effects. Our work is smaller-scale and simpler (logistic regression + TF-IDF), but similar in spirit: we treat WSB as an attention/sentiment signal and test whether it helps flag large moves out of sample.
           </p>
 
-          <h3>Descriptive WSB EDA</h3>
+          <h3><a href="https://www.kaggle.com/code/curiel/r-wallstreetbets-eda-sa/notebook" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">Descriptive WSB EDA</a></h3>
           <p>
             The Kaggle “r/WallStreetBets EDA &amp; Sentiment Analysis” notebook focuses on basic cleaning, ticker mention counts, and VADER sentiment over time. It informed our preprocessing choices (ticker regexes, bot removal, sentiment features) but stops at exploration. We extend it by aligning Reddit with OHLCV prices and framing a supervised next-day big-move prediction task instead of just describing patterns.
           </p>
 
-          <h3>Single-stock information transfer (GME)</h3>
+          <h3><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4649092" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">Single-stock information transfer (GME)</a></h3>
           <p>
             Recent studies on GameStop use wavelet/transfer-entropy analyses to show how WSB topics and sentiment transmit information specifically to GME returns, with Reddit activity leading volatility and text features outperforming simple counts. Our results are consistent: richer Reddit features (TF-IDF text + sentiment + counts) beat pure price-only baselines, but we evaluate them in a cross-sectional, multi-ticker, next-day classification/ranking setup.
           </p>
