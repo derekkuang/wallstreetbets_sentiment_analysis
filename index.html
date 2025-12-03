@@ -108,7 +108,7 @@
     /* Hero */
     .hero {
       display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2.3fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 26px;
       align-items: center;
       margin-bottom: 34px;
@@ -127,7 +127,7 @@
     .hero-subtitle {
       font-size: 0.95rem;
       color: var(--text-muted);
-      max-width: 36rem;
+      max-width: none;
       margin-bottom: 16px;
     }
 
@@ -309,6 +309,152 @@
       gap: 14px;
     }
 
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin: 10px 0 14px;
+    }
+
+    .metric-card {
+      background: var(--bg-alt);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .metric-label {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .viz-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 12px;
+    }
+
+    .viz-card {
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    .viz-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin: 2px 0 6px;
+    }
+
+    .viz-embed {
+      width: 100%;
+      height: 250px;   /* compact by default to reduce page scrolling */
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+    }
+
+    .viz-embed.tall {
+      height: 360px;
+    }
+
+    .viz-embed.full {
+      height: 700px;   /* keep case-study plots large to avoid internal scrolling */
+    }
+
+    .viz-embed.table {
+      height: 450px;
+      background: #0b1020;
+    }
+
+    .img-embed {
+      width: 100%;
+      display: block;
+      border-radius: 12px;
+      border: none;
+    }
+
+    .img-embed.small {
+      max-height: 240px;
+      object-fit: contain;
+    }
+
+    .pill-tight {
+      display: inline-flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 6px 0 12px;
+    }
+
+    .pill-compact {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(148,163,184,0.12);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.8rem;
+    }
+
+    .callout {
+      border: 1px solid rgba(255,122,69,0.4);
+      background: rgba(255,122,69,0.06);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin: 12px 0 6px;
+      color: var(--text-main);
+    }
+
+    /* Sample table */
+    .sample-table-wrap {
+      max-height: 220px;
+      overflow: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: var(--bg-alt);
+      margin: 6px 0 12px;
+      box-sizing: border-box;
+    }
+
+    .sample-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: transparent;
+      font-size: 0.78rem;
+    }
+
+    .sample-table th,
+    .sample-table td {
+      padding: 6px 8px;
+      border: 1px solid var(--border-subtle);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .sample-table thead {
+      background: rgba(148,163,184,0.12);
+      color: var(--text-muted);
+    }
+
+    .viz-note {
+      margin: 6px 0 0;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
     h3 {
       font-size: 0.95rem;
       margin: 8px 0 4px;
@@ -403,12 +549,11 @@
       </div>
       <nav class="nav-right">
         <a href="#overview">Overview</a>
-        <a href="#data">Task</a>
-        <a href="#models">Data</a>
-        <a href="#evaluation">Models</a>
-        <a href="#eval-detail">Evaluation</a>
+        <a href="#task">Predictive Task</a>
+        <a href="#data">Data &amp; EDA</a>
+        <a href="#modeling">Modeling</a>
+        <a href="#evaluation">Evaluation</a>
         <a href="#related">Related Work</a>
-        <a href="#links">Links</a>
       </nav>
     </header>
 
@@ -420,10 +565,7 @@
             Predicting next-day <span>“heat”</span> for stocks from r/WallStreetBets
           </h1>
           <p class="hero-subtitle">
-            This CSE 158 project combines Reddit’s <code>r/WallStreetBets</code> discussion data
-            with historical US stock prices to predict which tickers are most likely to
-            experience large next-day moves, and ranks them with a learned
-            <strong>heat score</strong>.
+            This CSE 158 project combines Reddit’s <code>r/WallStreetBets</code> discussion data with historical US stock prices to predict which tickers are most likely to experience large next-day moves, and ranks them with a learned <strong>heat score</strong>. Dataset: 16,645 ticker-days across 78 tickers (2023-06-08 → 2025-03-31), big-move base rate = 10.9%. The final model blends WSB mention volume, sentiment scores, engagement signals, and lagged price/volatility features; baselines include popularity-only rankings and logistic regression on simple tabular features.
           </p>
           <div class="hero-tags">
             <span class="tag tag-strong">Machine Learning · Python</span>
@@ -440,312 +582,486 @@
           </div>
         </div>
 
-        <!-- Right: WSB-style mini dashboard -->
-        <aside class="hero-card">
-          <div class="hero-card-header">
-            <div>
-              <div class="hero-card-title">Top 3 tickers by heat score</div>
-              <div style="font-size:0.72rem;color:var(--text-muted);">
-                Demo snapshot – probabilities of &gt; 5% next-day move
-              </div>
-            </div>
-            <span class="hero-chip">Model: boosted trees</span>
-          </div>
-
-          <div class="ticker-grid">
-            <div class="ticker-card">
-              <div class="ticker-symbol">$GME</div>
-              <div class="ticker-meta">Meme · High WSB volume</div>
-              <div class="ticker-score">heat = 0.81</div>
-            </div>
-            <div class="ticker-card">
-              <div class="ticker-symbol">$TSLA</div>
-              <div class="ticker-meta">Auto · Bullish sentiment</div>
-              <div class="ticker-score">heat = 0.65</div>
-            </div>
-            <div class="ticker-card">
-              <div class="ticker-symbol">$PLTR</div>
-              <div class="ticker-meta">Tech · Abnormal volume</div>
-              <div class="ticker-score">heat = 0.58</div>
-            </div>
-          </div>
-
-          <div class="sparkline">
-            The final model combines: WSB mention volume, sentiment scores, engagement
-            (upvotes / emojis), and lagged price &amp; volatility features. Baselines include
-            popularity-only rankings and logistic regression on simple tabular features.
-          </div>
-        </aside>
       </section>
 
       <!-- SECTION 1: PREDICTIVE TASK -->
-      <section id="data">
+      <section id="task">
         <div class="section-card">
-          <h2 class="section-title">1. Predictive Task &amp; Evaluation Setup</h2>
+          <h2 class="section-title">1. Predictive Task &amp; Evaluation Plan</h2>
           <p class="section-sub">
-            This section defines the prediction problem, how we evaluate models, which
-            baselines we compare against, and how we check that the predictions are valid.
+            Predict large next-day moves for each ticker-day using WSB chatter + price/volume history, then rank tickers by a heat score.
           </p>
+
+          <p>
+            <strong>Overview.</strong> We start with a time-series view for <strong>NVDA</strong> plotting price index and daily WSB attention (mentions, scores, unique authors), highlighting high-attention days and large next-day absolute returns. Hype days often coincide with volatility, but not every spike is followed by a big move.
+          </p>
+
+          <div class="viz-grid">
+            <div class="viz-card">
+              <div class="viz-title">NVDA: price, WSB attention, and big moves</div>
+              <iframe class="viz-embed full" src="plots/NVDA.html" loading="lazy"></iframe>
+            </div>
+          </div>
 
           <div class="section-grid">
             <div>
-              <h3>Predictive task</h3>
-              <p>
-                The goal is to predict whether a stock will experience a
-                <strong>large next-day price move</strong>. For each (ticker, day) example:
-              </p>
+              <h3>1.1 Predictive task</h3>
+              <p><strong>Task.</strong> For each (ticker, day), predict whether the ticker will make a <strong>large next-day move</strong> and assign a <strong>heat score</strong> (probability of a big move).</p>
               <ul>
-                <li>
-                  Define the label <code>big_move = 1</code> if the absolute next-day return
-                  <code>|next_return| ≥ 5%</code>, otherwise <code>0</code>.
+                <li><strong>Label</strong>: <code>big_move = 1</code> if <code>|next_return| ≥ 5%</code>; else <code>0</code>.</li>
+                <li><strong>Inputs</strong> (per ticker-day):
+                  <ul>
+                    <li><strong>WSB activity</strong>: mention counts, upvote score sums, unique authors, post/comment mix.</li>
+                    <li><strong>Text</strong>: aggregated WSB posts/comments represented with <strong>TF-IDF</strong> (1-2 grams).</li>
+                    <li><strong>Sentiment</strong>: VADER scores aggregated per ticker-day.</li>
+                    <li><strong>Price/volume history</strong>: return, log-volume, recent return windows (1d/3d/5d), rolling volatility, volume anomalies.</li>
+                  </ul>
                 </li>
-                <li>
-                  Use features from three sources:
-                  recent price &amp; volume, WSB activity (mentions, upvotes, authors),
-                  and text-based features from WSB discussions.
-                </li>
-                <li>
-                  The predicted probability of a big move serves as a
-                  <strong>heat score</strong> to rank tickers for that day.
-                </li>
+                <li><strong>Output</strong>: <code>P(big_move = 1 | features)</code> — a continuous <strong>heat score</strong> in [0,1] used for classification or ranking.</li>
               </ul>
-
-              <h3>Evaluation metrics &amp; time split</h3>
-              <p>
-                Because big moves are relatively rare, we focus on
-                <strong>classification quality</strong> rather than just accuracy:
-              </p>
-              <ul>
-                <li><strong>F1-score</strong> (primary metric for model selection).</li>
-                <li><strong>Precision &amp; Recall</strong> to understand trade-offs.</li>
-                <li><strong>ROC-AUC</strong> for overall ranking quality.</li>
-                <li><strong>Accuracy</strong> reported for reference only.</li>
-              </ul>
-              <p>
-                To avoid look-ahead bias, we use a <strong>time-based split</strong>:
-                about 70% of the oldest dates for training, 15% for validation,
-                and the most recent 15% as a held-out test set.
-              </p>
             </div>
 
             <div>
-              <h3>Baselines for comparison</h3>
-              <p>
-                We compare all models against several simple but meaningful baselines:
-              </p>
+              <h3>1.2 Evaluation setup</h3>
               <ul>
-                <li>Baseline 0: Majority classifier (always predict no big move).</li>
-                <li>Baseline 1: Price-only logistic regression.</li>
-                <li>Baseline 2: WSB numeric-only logistic regression.</li>
-                <li>Baseline 3: Price + WSB numeric logistic regression.</li>
-                <li>Baseline 4: Text-only TF-IDF logistic regression.</li>
-                <li>Baseline 5: Text + numeric logistic regression.</li>
-                <li>Baseline 6–9: Tuned TF-IDF models with sentiment, price-history, and temporal Reddit features.</li>
+                <li><strong>Train / val / test split</strong>: oldest ~70% train, next ~15% val, most recent ~15% test (date-based, no shuffling).</li>
+                <li><strong>Model family</strong>: logistic regression pipelines (course-relevant) combining TF-IDF text + standardized numeric features.</li>
+                <li><strong>Hyperparameters &amp; threshold</strong>: tuned with <code>TimeSeriesSplit</code> on train+val; decision threshold picked on a held-out slice for F1; test set used once.</li>
+                <li><strong>Metrics</strong>: primary F1; also precision, recall, ROC-AUC, accuracy for context; ROC curves judge heat-score ranking.</li>
               </ul>
 
-              <h3>Checking model validity</h3>
-              <p>
-                To make sure the final model’s predictions are trustworthy:
-              </p>
+              <h3>1.3 Baselines</h3>
               <ul>
-                <li>
-                  All tuning (hyperparameters and classification threshold) is done
-                  on the validation set only; the test set is used once at the end.
-                </li>
-                <li>
-                  We examine performance separately on different time periods and tickers
-                  to make sure results are not driven by a single meme-stock episode.
-                </li>
-                <li>
-                  Error analysis on false positives/negatives checks whether predictions
-                  line up with reasonable market behavior and WSB activity spikes.
-                </li>
+                <li><strong>Trivial</strong>: always 0, always 1.</li>
+                <li><strong>Numeric logistic</strong>: price-only; WSB-only numeric; price + WSB numeric.</li>
+                <li><strong>Text baselines</strong>: TF-IDF text-only; TF-IDF text + basic numeric (return, log_volume, mention_count, score_sum).</li>
+                <li><strong>Final model</strong>: TF-IDF text + all numeric (price/volume history, volatility, volume anomalies, WSB activity, sentiment) with tuned hyperparameters/threshold.</li>
               </ul>
+
+              <h3>1.4 Validity / sanity checks</h3>
+              <ul>
+                <li><strong>No look-ahead</strong>: targets use next-day returns; features use same-day or lagged signals; chronological splits prevent leakage.</li>
+                <li><strong>Robustness</strong>: confusion matrices and ROC curves compare price-only vs final; slice by ticker/time (e.g., NVDA) to see when heat aligns with true big moves.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-label">Examples</div>
+              <div class="metric-value">16,645 (ticker-days)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Tickers</div>
+              <div class="metric-value">78 tracked symbols</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Date range</div>
+              <div class="metric-value">2023-06-08 → 2025-03-31</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Base rate</div>
+              <div class="metric-value">10.9% big moves</div>
             </div>
           </div>
 
           <div class="pill-row">
             <span class="pill pill-good">Binary classification (big move vs. no move)</span>
             <span class="pill">Time-based train / val / test split</span>
-            <span class="pill pill-warn">Imbalanced labels · F1 &amp; AUC focused</span>
+            <span class="pill pill-warn">Imbalanced labels → F1 &amp; ROC focus</span>
           </div>
         </div>
       </section>
 
-      <!-- SECTION 2: DATA COLLECTION & PRE-PROCESSING -->
-      <section id="models">
+      <!-- SECTION 2: DATA COLLECTION & EDA -->
+      <section id="data">
         <div class="section-card">
-          <h2 class="section-title">2. Data Collection &amp; Pre-processing</h2>
+          <h2 class="section-title">2. Exploratory Analysis, Data Collection &amp; Pre-processing</h2>
           <p class="section-sub">
-            This section summarizes where the dataset comes from and how the raw Reddit
-            and market data were transformed into structured (ticker, day) examples.
+            Reddit WSB posts/comments and Yahoo Finance prices are aligned into a daily (ticker, day) table used for EDA and all downstream models.
           </p>
 
-          <div class="section-grid">
-            <div>
-              <h3>Context</h3>
-              <ul>
-                <li>
-                  Reddit data comes from a cleaned dump of posts and comments from
-                  <code>r/WallStreetBets</code> (titles, bodies, authors, timestamps, scores, tags).
-                </li>
-                <li>
-                  Market data comes from Yahoo Finance, providing daily OHLCV
-                  (open, high, low, close, volume) for actively traded US tickers.
-                </li>
-                <li>
-                  The goal is to connect Reddit discussions with real market behavior
-                  by forming structured <strong>(ticker, day)</strong> examples.
-                </li>
-              </ul>
+          <h3>2.1 Data sources (context)</h3>
+          <ul>
+            <li><strong>Reddit (r/WallStreetBets):</strong> CSV of posts/comments with text, author, timestamp, score, and tags.</li>
+            <li><strong>Yahoo Finance:</strong> Daily OHLCV prices for a curated set of WSB tickers over 2023–2025.</li>
+          </ul>
+          <p>Goal: align these into a <strong>daily (ticker, day)</strong> table that feeds both EDA and the prediction task.</p>
 
-              <h3>Reddit processing</h3>
-              <ul>
-                <li>Normalize timestamps to daily granularity.</li>
-                <li>Remove bot / moderator users and drop deleted or empty content.</li>
-                <li>
-                  Construct a canonical text field by merging post titles and bodies
-                  (or comment text), removing URLs and line breaks, and lowercasing
-                  into a single <code>clean_text</code> column.
-                </li>
-                <li>
-                  This clean text is used later for tokenization, sentiment scoring,
-                  and TF-IDF features.
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3>Ticker mapping &amp; price data</h3>
-              <ul>
-                <li>
-                  Extract candidate tickers using cashtags (e.g., <code>$GME</code>) and
-                  bare uppercase tokens (e.g., <code>NVDA</code>, <code>SPY</code>).
-                </li>
-                <li>
-                  Filter candidates by minimum frequency and manually drop ambiguous
-                  English words and generic finance terms.
-                </li>
-                <li>
-                  Validate the remaining symbols with Yahoo Finance to ensure they
-                  correspond to real, actively traded stocks.
-                </li>
-                <li>
-                  Explode Reddit rows so each (post/comment) × (ticker) becomes its
-                  own row, then download daily OHLCV prices for that curated
-                  ticker universe and reshape to long format aligned on
-                  <code>(ticker, datetime)</code>.
-                </li>
-              </ul>
-
-              <h3>Merged modeling table</h3>
-              <ul>
-                <li>
-                  Join Reddit activity, sentiment, text, and price data into one
-                  modeling table indexed by <strong>(ticker, day)</strong>.
-                </li>
-                <li>
-                  Include mention counts, upvotes, comment volume, sentiment scores,
-                  cleaned text, daily returns, and basic rolling / lagged price features.
-                </li>
-                <li>
-                  This merged table is the starting point for exploratory plots,
-                  summary statistics, and all predictive models in later sections.
-                </li>
-              </ul>
-            </div>
+          <h4>Example raw WSB rows (truncated)</h4>
+          <div class="sample-table-wrap">
+            <table class="sample-table">
+              <thead>
+                <tr>
+                  <th>register_index</th>
+                  <th>post_id</th>
+                  <th>comment_id</th>
+                  <th>author</th>
+                  <th>datetime</th>
+                  <th>title</th>
+                  <th>url</th>
+                  <th>score</th>
+                  <th>comments</th>
+                  <th>text</th>
+                  <th>author_post_karma</th>
+                  <th>tag</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>14b78hkjoe86nf</td>
+                  <td>14b78hk</td>
+                  <td>joe86nf</td>
+                  <td>scott_jr</td>
+                  <td>2023-06-16 20:36:55</td>
+                  <td></td>
+                  <td></td>
+                  <td>1.0</td>
+                  <td></td>
+                  <td>Watch til 1 10</td>
+                  <td>32102.0</td>
+                  <td>Meme</td>
+                </tr>
+                <tr>
+                  <td>14b71m2post</td>
+                  <td>14b71m2</td>
+                  <td></td>
+                  <td>merakibret</td>
+                  <td>2023-06-16 20:24:01</td>
+                  <td>I had my first ever big success with options t...</td>
+                  <td>https://www.reddit.com/r/wallstreetbets/commen...</td>
+                  <td>8.0</td>
+                  <td>6.0</td>
+                  <td>Entered an Iron Condor on ADBE yesterday at 45...</td>
+                  <td>343.0</td>
+                  <td>Gain</td>
+                </tr>
+                <tr>
+                  <td>14b71m2joe6du9</td>
+                  <td>14b71m2</td>
+                  <td>joe6du9</td>
+                  <td>VisualMod</td>
+                  <td>2023-06-16 20:24:07</td>
+                  <td></td>
+                  <td></td>
+                  <td>1.0</td>
+                  <td></td>
+                  <td>User Report Tota...</td>
+                  <td>725083.0</td>
+                  <td>Gain</td>
+                </tr>
+                <tr>
+                  <td>14b71m2joe6een</td>
+                  <td>14b71m2</td>
+                  <td>joe6een</td>
+                  <td>VisualMod</td>
+                  <td>2023-06-16 20:24:13</td>
+                  <td></td>
+                  <td></td>
+                  <td>2.0</td>
+                  <td></td>
+                  <td>That was a very wise move</td>
+                  <td>725083.0</td>
+                  <td>Gain</td>
+                </tr>
+                <tr>
+                  <td>14b71m2joe7yy4</td>
+                  <td>14b71m2</td>
+                  <td>joe7yy4</td>
+                  <td>DreamcatcherEgg</td>
+                  <td>2023-06-16 20:35:23</td>
+                  <td></td>
+                  <td></td>
+                  <td>2.0</td>
+                  <td></td>
+                  <td>All you have to do is repeat this same winning...</td>
+                  <td>6088.0</td>
+                  <td>Gain</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <div class="pill-row">
-            <span class="pill">Reddit text cleaning</span>
-            <span class="pill">Ticker extraction</span>
-            <span class="pill">YFinance validation</span>
-            <span class="pill">Reddit–market merge</span>
+          <h3>2.2 Cleaning and ticker construction</h3>
+          <ul>
+            <li>Normalize <code>datetime</code> to dates; drop bots/mods and <code>[deleted]/[removed]</code> rows.</li>
+            <li>Build <code>raw_text</code> from <code>title</code> + <code>text</code>, then <code>clean_text</code> by stripping URLs, collapsing whitespace, lowercasing.</li>
+            <li>Extract candidate tickers via cashtags (<code>$TSLA</code>) and uppercase tokens (<code>TSLA</code>, <code>NVDA</code>); keep tokens with ≥500 mentions; filter obvious non-stocks; require valid Yahoo price history.</li>
+            <li>Explode to one row per <strong>(WSB row, ticker)</strong>: <code>wsb_exploded</code>.</li>
+          </ul>
+
+          <h3>2.3 Price alignment and feature table</h3>
+          <h4>Sample Yahoo Finance price rows (long format)</h4>
+          <div class="sample-table-wrap">
+            <table class="sample-table">
+              <thead>
+                <tr>
+                  <th>datetime</th>
+                  <th>ticker</th>
+                  <th>adj_close</th>
+                  <th>close</th>
+                  <th>high</th>
+                  <th>low</th>
+                  <th>open</th>
+                  <th>volume</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>6/1/23</td>
+                  <td>AAPL</td>
+                  <td>177.93</td>
+                  <td>180.09</td>
+                  <td>180.12</td>
+                  <td>176.93</td>
+                  <td>177.70</td>
+                  <td>68901800</td>
+                </tr>
+                <tr>
+                  <td>6/2/23</td>
+                  <td>AAPL</td>
+                  <td>178.78</td>
+                  <td>180.95</td>
+                  <td>181.78</td>
+                  <td>179.26</td>
+                  <td>181.03</td>
+                  <td>61996900</td>
+                </tr>
+                <tr>
+                  <td>6/5/23</td>
+                  <td>AAPL</td>
+                  <td>177.43</td>
+                  <td>179.58</td>
+                  <td>184.95</td>
+                  <td>178.04</td>
+                  <td>182.63</td>
+                  <td>121946500</td>
+                </tr>
+                <tr>
+                  <td>6/6/23</td>
+                  <td>AAPL</td>
+                  <td>177.06</td>
+                  <td>179.21</td>
+                  <td>180.12</td>
+                  <td>177.43</td>
+                  <td>179.97</td>
+                  <td>64848400</td>
+                </tr>
+                <tr>
+                  <td>6/7/23</td>
+                  <td>AAPL</td>
+                  <td>175.69</td>
+                  <td>177.82</td>
+                  <td>181.21</td>
+                  <td>177.32</td>
+                  <td>178.44</td>
+                  <td>61944600</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li>From Yahoo prices: compute daily <code>return</code>, <code>next_return</code>, and <code>big_move = 1[|next_return| ≥ 5%]</code>; keep <code>(datetime, ticker, close, volume, return, next_return, big_move)</code>.</li>
+            <li>Aggregate WSB to <strong>(datetime, ticker)</strong>:
+              <ul>
+                <li>Numeric: <code>mention_count</code>, <code>score_sum</code>, <code>score_mean</code>, <code>post_fraction</code>, <code>unique_authors</code>.</li>
+                <li>Text: concatenate <code>clean_text</code> → <code>doc_text</code>.</li>
+              </ul>
+            </li>
+            <li>Merge price + WSB numeric + text, add <code>log_volume = log(1 + volume)</code>, drop rows with missing core features. Final modeling table: ~16k daily examples.</li>
+          </ul>
+
+          <h3>2.4 Key EDA findings (with plots)</h3>
+          <ul>
+            <li><strong>Return distribution:</strong> fat-tailed around 0; 5% sits in the tail → reasonable “big move” cutoff.</li>
+            <li><strong>WSB attention vs volatility:</strong> higher mention buckets have larger mean <code>|next-day return|</code> → attention aligns with higher volatility.</li>
+            <li><strong>Text content:</strong> word cloud dominated by tickers, options slang, and event words → confirms domain relevance.</li>
+            <li><strong>Ticker case studies (NVDA, TSLA):</strong> indexed price + high-attention marks + big-move bars show large moves often coincide with elevated WSB activity, motivating a probabilistic model.</li>
+          </ul>
+
+          <h3>2.5 Inputs to the model (summary)</h3>
+          <ul>
+            <li><strong>Inputs:</strong> WSB numeric features, price/volume + lags/volatility, VADER sentiment, and <code>doc_text</code> (for TF-IDF).</li>
+            <li><strong>Label:</strong> <code>big_move ∈ {0,1}</code> for ≥5% absolute next-day moves.</li>
+          </ul>
+
+          <div class="viz-grid">
+            <div class="viz-card">
+              <div class="viz-title">Daily returns distribution (all tickers)</div>
+              <iframe class="viz-embed tall" src="plots/daily_returns_distribution.html" loading="lazy"></iframe>
+              <p class="viz-note">
+                <strong>Takeaway:</strong> Returns are centered near 0 with fat tails; the 5% VaR bands capture the
+                big-move threshold used for labels, underscoring the class imbalance of rare ±5% days.
+              </p>
+            </div>
+            <div class="viz-card">
+              <div class="viz-title">Average daily return by day of week</div>
+              <iframe class="viz-embed" src="plots/dow_avg_returns.html" loading="lazy"></iframe>
+              <p class="viz-note">
+                <strong>Takeaway:</strong> Modest positive drift early in the week and weaker performance on Thursdays;
+                day-of-week is a minor effect compared to WSB attention spikes.
+              </p>
+            </div>
+            <div class="viz-card">
+              <div class="viz-title">WSB attention vs. volatility</div>
+              <iframe class="viz-embed tall" src="plots/wsb_mention_vs_volatility.html" loading="lazy"></iframe>
+              <p class="viz-note">
+                <strong>Takeaway:</strong> Higher mention buckets correlate with larger absolute next-day returns
+                (volatility lift), motivating the inclusion of WSB volume features.
+              </p>
+            </div>
+            <div class="viz-card">
+              <div class="viz-title">WSB title/phrase cloud</div>
+              <img class="img-embed small" src="plots/wsb_title_wordcloud.png" alt="Word cloud of common WSB phrases" loading="lazy">
+              <p class="viz-note">
+                <strong>Takeaway:</strong> Dominant tokens are ticker symbols, options slang, and catalyst language
+                (earnings, calls/puts), which the TF-IDF text features capture.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- SECTION 3: MODELING & RESULTS -->
+      <!-- SECTION 3: MODELING -->
+      <section id="modeling">
+        <div class="section-card">
+          <h2 class="section-title">3. Modeling</h2>
+          <p class="section-sub">
+            Binary classification at the (ticker, day) level; the predicted probability is used as a heat score to rank tickers by risk of a large move.
+          </p>
+
+          <h3>3.1 Task formulation</h3>
+          <ul>
+            <li><strong>Unit:</strong> one row = one <em>(ticker, date)</em>.</li>
+            <li><strong>Label:</strong> <code>big_move = 1</code> if <code>|next_return| ≥ 5%</code> (next-day close-to-close); else <code>0</code>.</li>
+            <li><strong>Output:</strong> <code>\u005Chat{p} = P(big_move = 1 | x)</code>, the <strong>heat score</strong>; higher = more likely ≥5% absolute move tomorrow.</li>
+          </ul>
+
+          <h3>3.2 Features</h3>
+          <ul>
+            <li><strong>Price &amp; volume (short-term dynamics):</strong> return, log_volume; lags <code>ret_prev_1d/3d/5d</code>; volatility <code>vol_5d/vol_10d</code>; volume anomaly <code>vol_rel_5d</code>.</li>
+            <li><strong>WSB numeric signals:</strong> mention_count, score_sum, score_mean, post_fraction, unique_authors.</li>
+            <li><strong>Sentiment:</strong> VADER sent_mean per ticker-day.</li>
+            <li><strong>Textual signal:</strong> doc_text (all WSB text per ticker-day) → TF-IDF (1–2 grams, capped vocab).</li>
+          </ul>
+          <div class="pill-tight">
+            <span class="pill-compact">TF-IDF (1–2g)</span>
+            <span class="pill-compact">Lagged returns &amp; vol</span>
+            <span class="pill-compact">WSB mentions/authors</span>
+            <span class="pill-compact">Sentiment (VADER)</span>
+          </div>
+
+          <h3>3.3 Baseline models (all logistic regression)</h3>
+          <ul>
+            <li><strong>Price-only logistic</strong> — features <code>['return', 'log_volume']</code>, scaled.</li>
+            <li><strong>WSB-numeric-only logistic</strong> — features <code>['mention_count', 'score_sum']</code>.</li>
+            <li><strong>Price + WSB numeric logistic</strong> — <code>['return', 'log_volume', 'mention_count', 'score_sum']</code>.</li>
+            <li><strong>Text-only logistic</strong> — TF-IDF on doc_text (max_features 10k, ngram_range (1,2)).</li>
+            <li><strong>Text + basic numeric logistic</strong> — TF-IDF + scaled <code>[return, log_volume, mention_count, score_sum]</code> (sparse + dense hstack).</li>
+          </ul>
+          <p style="font-size:0.85rem;color:var(--text-muted);">Each numeric baseline uses:</p>
+<pre><code class="language-python">pipe = Pipeline([
+    ("scaler", StandardScaler()),
+    ("clf", LogisticRegression(
+        penalty="l2",
+        C=1.0,
+        class_weight="balanced",
+        max_iter=1000,
+        solver="lbfgs",
+    )),
+])
+pipe.fit(X_train, y_train)
+</code></pre>
+
+          <h3>3.4 Final model and tuning</h3>
+          <div class="pill-tight">
+            <span class="pill-compact">🏁 Final model</span>
+            <span class="pill-compact">F1-tuned grid search</span>
+            <span class="pill-compact">ROC-based ranking check</span>
+          </div>
+          <ul>
+            <li><strong>Inputs:</strong> doc_text + all numeric columns (price/volume history, volatility, volume anomalies, WSB activity, sentiment).</li>
+            <li><strong>Architecture:</strong> <code>ColumnTransformer</code> with TF-IDF branch + scaled numeric branch → <code>LogisticRegression(max_iter=1000)</code>.</li>
+            <li><strong>CV:</strong> train+val combined, chronological; <code>TimeSeriesSplit(n_splits=5)</code>.</li>
+            <li><strong>Grid search:</strong> TF-IDF <code>max_features ∈ {5000,10000}</code>, <code>ngram_range ∈ {(1,1),(1,2)}</code>, <code>min_df=5</code>, <code>max_df=0.7</code>; Logistic <code>C ∈ {0.1,1.0,10.0}</code>, <code>class_weight ∈ {'balanced', None}</code>. Maximize F1; freeze best pipeline and evaluate once on test.</li>
+          </ul>
+
+          <h3>3.5 Advantages and limitations</h3>
+          <ul>
+            <li><strong>Pros:</strong> aligned with course content; fast on ~16k examples; produces probability heat scores for ranking; handles sparse TF-IDF + dense numeric.</li>
+            <li><strong>Handling imbalance/dynamics:</strong> class weights; lagged returns/volatility/volume anomalies; attention signals (mentions/authors/sentiment).</li>
+            <li><strong>Limits:</strong> linear boundary, no explicit text–price interactions, no temporal sequence model.</li>
+          </ul>
+          <div class="callout">
+            <strong>Next steps:</strong> explore boosted trees or sequence models to capture nonlinear text–price interactions and temporal patterns beyond single-day features.
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: EVALUATION -->
       <section id="evaluation">
-        <div class="section-card">
-          <h2 class="section-title">3. Modeling &amp; Results</h2>
-          <p class="section-sub">
-            This section covers the main modeling choices and how the final model
-            compares to the baselines in terms of classification quality.
-          </p>
-
-          <div class="section-grid">
-            <div>
-              <h3>Model family</h3>
-              <ul>
-                <li>
-                  Core model: logistic regression on a combined feature space
-                  of TF-IDF text features plus numeric Reddit and price features.
-                </li>
-                <li>
-                  Hyperparameters for TF-IDF (vocabulary size, n-grams) and
-                  regularization strength are tuned using validation F1.
-                </li>
-                <li>
-                  Additional variants add sentiment features and temporal Reddit
-                  features (lags, rolling averages, “buzz shock” ratios).
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3>Key performance summary</h3>
-              <p>
-                The tuned text + numeric model substantially outperforms all simple
-                baselines on F1, precision, recall, and ROC-AUC on the held-out test set.
-              </p>
-              <p style="font-size:0.78rem;color:var(--text-muted);">
-                In the final writeup, this card will be backed by tables / plots from the
-                notebook (e.g., metric comparison chart, ROC curves, and ablation
-                results for different feature groups).
-              </p>
-            </div>
-          </div>
-
-          <div class="pill-row">
-            <span class="pill pill-good">TF-IDF + numeric logistic regression</span>
-            <span class="pill">Sentiment &amp; temporal Reddit features</span>
-            <span class="pill pill-warn">Few positive labels → threshold tuning</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- SECTION 4: EVALUATION (PLACEHOLDER) -->
-      <section id="eval-detail">
         <div class="section-card">
           <h2 class="section-title">4. Evaluation</h2>
           <p class="section-sub">
-            Placeholder section for a deeper discussion of evaluation:
-            why these metrics are appropriate, how we compare to baselines,
-            and which plots/tables support our conclusions.
+            Metrics, baselines, and diagnostic plots that justify the final model choice.
           </p>
 
-          <div class="section-grid">
-            <div>
-              <h3>Context (to fill in)</h3>
-              <ul>
-                <li>Explain why F1 / precision / recall / ROC-AUC are appropriate.</li>
-                <li>Discuss class imbalance and why accuracy alone is misleading.</li>
-                <li>Describe how ranking quality is evaluated (e.g., recall@K).</li>
-              </ul>
+          <h3>4.1 Protocol</h3>
+          <ul>
+            <li><strong>Split:</strong> Time-based 70% train / 15% val / 15% test (no shuffling).</li>
+            <li><strong>Outputs:</strong> Model returns <code>P(big_move=1)</code> = heat score.</li>
+            <li><strong>Threshold:</strong> One decision threshold picked on validation F1, then fixed; test is used once.</li>
+            <li><strong>Metrics (test):</strong> main = F1 (positives ≈ 10–12%); also precision, recall, ROC-AUC, accuracy; diagnostics via confusion matrix + ROC curves.</li>
+          </ul>
+
+          <h3>4.2 Baselines vs. final model</h3>
+          <ul>
+            <li><strong>Trivial:</strong> always 0 (high accuracy, F1≈0); always 1 (recall=1, terrible precision/accuracy).</li>
+            <li><strong>Course-style logistics:</strong> price-only (<code>return, log_volume</code>); WSB numeric-only (<code>mention_count, score_sum</code>); price + WSB numeric (small lift); TF-IDF text-only (big recall/ROC gain); TF-IDF text + basic numeric (best untuned).</li>
+            <li><strong>Final model:</strong> TF-IDF + all numeric (price lags, volatility, volume anomaly, WSB numeric, sentiment), tuned by <code>GridSearchCV</code> (TimeSeriesSplit, scoring=F1). Best F1 and ROC-AUC on test with similar accuracy to simpler baselines.</li>
+          </ul>
+          <p class="viz-note" style="margin-top:-4px;">All results summarized in a test metrics table with columns <code>model, accuracy, auc, recall, f1, precision</code>, sorted by F1.</p>
+
+          <h3>4.3 Plots &amp; main conclusions</h3>
+          <ul>
+            <li><strong>Confusion matrix (final model):</strong> built from <code>y_test_grid</code> vs. <code>(y_prob_test_best ≥ τ)</code> (F1-tuned τ); shows more true positives than false positives while keeping many true negatives.</li>
+            <li><strong>ROC: price-only vs. final:</strong> final curve dominates price-only over most FPR, confirming better ranking of “hot” ticker-days.</li>
+          </ul>
+          <div class="callout">
+            <strong>Bottom line:</strong> Adding WSB text, sentiment, and richer price features clearly improves F1 and ROC-AUC over numeric-only baselines; the tuned text+numeric logistic is the right choice for the final heat score.
+          </div>
+
+          <div class="viz-grid">
+            <div class="viz-card">
+              <div class="viz-title">Accuracy / metrics table (test set)</div>
+              <iframe class="viz-embed table" src="plots/accuracy_table.html" loading="lazy" title="Test metrics table" scrolling="no"></iframe>
+              <p class="viz-note">
+                <strong>Takeaway:</strong> Final text+numeric model leads on F1/ROC while keeping accuracy similar
+                to simpler baselines; text-only already provides a big lift over numeric-only features.
+              </p>
             </div>
-            <div>
-              <h3>Protocol &amp; code (to fill in)</h3>
-              <ul>
-                <li>Outline the time-based split and threshold tuning process.</li>
-                <li>Reference the tables/plots you’ll embed (ROC, PR, metric bars).</li>
-                <li>Mention which sklearn functions you use for metrics.</li>
-              </ul>
+            <div class="viz-card">
+              <div class="viz-title">Confusion matrix — tuned final model (test)</div>
+              <img class="img-embed small" src="plots/final_confusion_matrix.png" alt="Confusion matrix for the final model on the test set" loading="lazy">
+              <p class="viz-note">
+                <strong>Takeaway:</strong> More true positives than false positives while keeping many true negatives,
+                consistent with a threshold tuned for F1 on an imbalanced label.
+              </p>
+            </div>
+            <div class="viz-card">
+              <div class="viz-title">ROC: price-only vs. final model</div>
+              <img class="img-embed small" src="plots/roc_price_vs_final.png" alt="ROC curve comparing price-only logistic to the tuned final model" loading="lazy">
+              <p class="viz-note">
+                <strong>Takeaway:</strong> The tuned text+numeric model dominates the price-only baseline across
+                operating points, showing better ranking of hot tickers.
+              </p>
             </div>
           </div>
 
           <div class="pill-row">
-            <span class="pill">Add metric tables here</span>
-            <span class="pill">Add ROC / PR plots here</span>
+            <span class="pill pill-good">F1-driven model selection</span>
+            <span class="pill">ROC / ranking checks</span>
+            <span class="pill pill-warn">Test set used once</span>
           </div>
         </div>
       </section>
@@ -754,115 +1070,25 @@
       <section id="related">
         <div class="section-card">
           <h2 class="section-title">5. Related Work &amp; Discussion</h2>
-          <p class="section-sub">
-            This section summarizes how similar WallStreetBets datasets have been used,
-            how prior work approached related tasks, and how our results compare.
+          <h3>WallStreetBets sentiment and markets</h3>
+          <p>
+            Huang &amp; Shum Nolan (2024) build daily stock- and forum-level sentiment indices from 2.2M WSB posts using a BERT classifier, then link “attention herding” portfolios to abnormal returns and Robinhood flows. They find that positive WSB sentiment and concentrated attention predict strong abnormal returns without short-term reversal, and that influencers amplify these effects. Our work is smaller-scale and simpler (logistic regression + TF-IDF), but similar in spirit: we treat WSB as an attention/sentiment signal and test whether it helps flag large moves out of sample.
           </p>
 
-          <div class="section-grid">
-            <!-- LEFT COLUMN -->
-            <div>
-              <h3>WSB sentiment &amp; market behavior</h3>
-              <ul>
-                <li>
-                  Uses WSB posts and comments to measure sentiment and attention, then
-                  studies how these signals relate to stock returns and retail trading.
-                </li>
-                <li>
-                  Shows that WSB activity contains <strong>predictive information</strong>,
-                  especially during high-attention periods.
-                </li>
-                <li>
-                  Our work is inspired by this but moves from correlation-style analysis to
-                  an explicit <strong>day-ahead prediction</strong> problem at the ticker level.
-                </li>
-              </ul>
-
-              <h3>Kaggle “r/WallStreetBets EDA &amp; Sentiment Analysis”</h3>
-              <ul>
-                <li>
-                  Performs exploratory analysis of WSB posts: mentions, tags, frequencies,
-                  and simple sentiment scores.
-                </li>
-                <li>
-                  Informed parts of our <strong>data cleaning</strong> and
-                  <strong>ticker-extraction</strong> pipeline.
-                </li>
-                <li>
-                  That work is descriptive; we extend it by turning Reddit + market data
-                  into a supervised dataset for prediction.
-                </li>
-              </ul>
-            </div>
-
-            <!-- RIGHT COLUMN -->
-            <div>
-              <h3>Reddit–GameStop information transfer</h3>
-              <ul>
-                <li>
-                  Focuses on GameStop (GME) using wavelet coherence to see whether
-                  Reddit discussions lead or lag price movements.
-                </li>
-                <li>
-                  Finds that social-media attention can <strong>precede volatility</strong>,
-                  especially in extreme meme-stock episodes.
-                </li>
-                <li>
-                  We instead build a cross-sectional model across many tickers, but our
-                  finding that Reddit features help detect large moves is consistent with
-                  this single-stock evidence.
-                </li>
-              </ul>
-
-              <h3>Overall takeaway</h3>
-              <ul>
-                <li>
-                  Prior work consistently shows that WSB attention is linked to volatility
-                  and abnormal volume.
-                </li>
-                <li>
-                  Our contribution is a <strong>fully supervised, out-of-sample evaluation</strong>
-                  of a model that predicts large next-day moves, combining Reddit text,
-                  sentiment, and market features.
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="pill-row">
-            <span class="pill">WSB sentiment signals</span>
-            <span class="pill">Meme-stock case studies</span>
-            <span class="pill pill-good">From descriptive to predictive</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- SECTION 6: LINKS / CSE CONTEXT -->
-      <section id="links">
-        <div class="section-card">
-          <h2 class="section-title">6. Code, Notebook &amp; CSE Context</h2>
-          <p class="section-sub">
-            This section links the GitHub repos, notebook HTML, and presentation video
-            required for Assignment 2, and makes it obvious for peer graders where to click.
+          <h3>Descriptive WSB EDA</h3>
+          <p>
+            The Kaggle “r/WallStreetBets EDA &amp; Sentiment Analysis” notebook focuses on basic cleaning, ticker mention counts, and VADER sentiment over time. It informed our preprocessing choices (ticker regexes, bot removal, sentiment features) but stops at exploration. We extend it by aligning Reddit with OHLCV prices and framing a supervised next-day big-move prediction task instead of just describing patterns.
           </p>
-          <ul>
-            <li>
-              <strong>Notebook (HTML):</strong>
-              <a href="#">link to <code>workbook.html</code></a>
-            </li>
-            <li>
-              <strong>Source code repo:</strong>
-              <a href="#">GitHub · project code</a>
-            </li>
-            <li>
-              <strong>Presentation video:</strong>
-              <a href="#">20-minute project talk</a>
-            </li>
-            <li>
-              <strong>Course:</strong> CSE 158 / 258: Recommender Systems &amp; Web Mining
-              – Assignment 2 (open-ended predictive modeling project).
-            </li>
-          </ul>
+
+          <h3>Single-stock information transfer (GME)</h3>
+          <p>
+            Recent studies on GameStop use wavelet/transfer-entropy analyses to show how WSB topics and sentiment transmit information specifically to GME returns, with Reddit activity leading volatility and text features outperforming simple counts. Our results are consistent: richer Reddit features (TF-IDF text + sentiment + counts) beat pure price-only baselines, but we evaluate them in a cross-sectional, multi-ticker, next-day classification/ranking setup.
+          </p>
+
+          <h3>How we differ</h3>
+          <p>
+            Prior work often runs event studies or portfolio regressions to show that WSB attention/sentiment correlates with abnormal returns and flows, or zooms in on a few meme stocks. Our contribution is to package WSB + price data into a ticker-day panel and evaluate an explicit predictive model (probability of ≥5% move) with a clean train/val/test split. The takeaway aligns with the literature: WSB attention and sentiment carry information about volatility and extreme moves, and even relatively simple models can exploit that signal out of sample.
+          </p>
         </div>
       </section>
     </main>

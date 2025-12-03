@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg: #050816;
+      --card: #0b1020;
+      --accent: #00e887;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --border: #1f2937;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+    .table-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      width: 100%;
+      height: 100%;
+      box-shadow: none;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 0.92rem;
+    }
+    thead th {
+      background: rgba(255,255,255,0.04);
+      padding: 10px 8px;
+      color: var(--muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .highlight {
+      color: var(--accent);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="table-wrap">
+    <h2>Test metrics for all models</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>model</th>
+          <th>accuracy</th>
+          <th>auc</th>
+          <th>recall</th>
+          <th>f1</th>
+          <th>precision</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="highlight">Final model (tuned TF–IDF + all numeric)</td>
+          <td>0.7413</td>
+          <td>0.8046</td>
+          <td>0.7219</td>
+          <td>0.4481</td>
+          <td>0.3249</td>
+        </tr>
+        <tr>
+          <td>Logistic (price + WSB numeric)</td>
+          <td>0.6772</td>
+          <td>0.5981</td>
+          <td>0.4298</td>
+          <td>0.2792</td>
+          <td>0.2068</td>
+        </tr>
+        <tr>
+          <td>Baseline: always 1 (big move)</td>
+          <td>0.1455</td>
+          <td>0.5000</td>
+          <td>1.0000</td>
+          <td>0.2540</td>
+          <td>0.1455</td>
+        </tr>
+        <tr>
+          <td>Logistic (price-only)</td>
+          <td>0.5296</td>
+          <td>0.5823</td>
+          <td>0.5365</td>
+          <td>0.2492</td>
+          <td>0.1623</td>
+        </tr>
+        <tr>
+          <td>Logistic (WSB numeric-only)</td>
+          <td>0.7683</td>
+          <td>0.5773</td>
+          <td>0.2360</td>
+          <td>0.2286</td>
+          <td>0.2216</td>
+        </tr>
+        <tr>
+          <td>Logistic (TF–IDF text + basic numeric)</td>
+          <td>0.6571</td>
+          <td>0.5219</td>
+          <td>0.3146</td>
+          <td>0.2107</td>
+          <td>0.1584</td>
+        </tr>
+        <tr>
+          <td>Logistic (TF–IDF text-only)</td>
+          <td>0.6453</td>
+          <td>0.5218</td>
+          <td>0.3146</td>
+          <td>0.2051</td>
+          <td>0.1522</td>
+        </tr>
+        <tr>
+          <td>Baseline: always 0 (no big move)</td>
+          <td>0.8545</td>
+          <td>0.5000</td>
+          <td>0.0000</td>
+          <td>0.0000</td>
+          <td>0.0000</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

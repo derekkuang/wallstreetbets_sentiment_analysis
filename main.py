@@ -32,7 +32,8 @@ from sklearn.metrics import (
     f1_score,
     roc_auc_score,
     precision_score,
-    recall_score
+    recall_score,
+    confusion_matrix
 )
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
 from sklearn.compose import ColumnTransformer
@@ -710,14 +711,7 @@ print(wsb_daily.head())
 
 wsb_text = wsb_exploded.copy()
 
-# Find the text column
-TEXT_COL_CANDIDATES = ['clean_text', 'text', 'raw_text']
-for c in TEXT_COL_CANDIDATES:
-    if c in wsb_text.columns:
-        text_col = c
-        break
-else:
-    raise ValueError("No text column found in wsb_exploded (expected one of: clean_text, text, raw_text)")
+text_col = 'clean_text'
 
 # Ensure string
 wsb_text[text_col] = wsb_text[text_col].fillna('').astype(str)
@@ -1526,6 +1520,8 @@ print("  test_df: ", test_df.shape)
 
 # GRID SEARCH CV FOR FINAL MODEL (TEXT + ALL NUMERIC), Hyperparameter Tuning
 
+all_num_cols = num_cols + sent_cols + new_price_feats
+text_col = 'doc_text'
 # 0. Build train+val combined set for CV, keep test separate
 train_df_sorted = train_df.sort_values('datetime')
 val_df_sorted   = val_df.sort_values('datetime')
@@ -1602,7 +1598,7 @@ eval_classifier("TEST (grid best)", y_test_grid, y_prob_test_best)
 
 # ## 4. Evaluation
 
-# In[ ]:
+# In[45]:
 
 
 # 4. Evaluation – compare ALL baselines vs final model on TEST
@@ -1709,7 +1705,7 @@ print("\n=== TEST METRICS FOR ALL MODELS ===")
 print(eval_df.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
 
 
-# In[ ]:
+# In[46]:
 
 
 # Confusion matrix – final model
@@ -1730,7 +1726,7 @@ out_path_cm = "plots/final_confusion_matrix.png"
 fig_cm.savefig(out_path_cm, dpi=150, bbox_inches="tight")
 
 
-# In[ ]:
+# In[47]:
 
 
 fig_roc, ax_roc = plt.subplots(figsize=(5, 5))
